@@ -3,4 +3,6 @@ export default interface Tutorial {
   title: string;
   description: string;
   published: boolean;
+  userId?: number;
+  user?: any
 }

@@ -10,12 +10,12 @@ class TutorialDataService {
     return http.get(`/tutorials/${id}`);
   }
 
-  create(data: any): Promise<any> {
-    return http.post("/tutorials", data);
+  create(data: any, userId: any): Promise<any> {
+    return http.post(`/tutorials?userId=${userId}`, data);
   }
 
-  update(id: any, data: any): Promise<any> {
-    return http.put(`/tutorials/${id}`, data);
+  update(id: any, data: any, userId: any) {
+    return http.put(`/tutorials/${id}?userId=${userId}`, data);
   }
 
   delete(id: any): Promise<any> {

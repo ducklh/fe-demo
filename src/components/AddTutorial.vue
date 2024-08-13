@@ -24,6 +24,16 @@
         />
       </div>
 
+      <div class="form-group">
+        <label for="user">User</label>
+        <select id="user" class="form-control" v-model="tutorial.userId">
+          <option value="" disabled>Select a user</option>
+          <option v-for="user in users" :key="user.id" :value="user.id">
+            {{ user.username }}
+          </option>
+        </select>
+      </div>
+
       <button @click="saveTutorial" class="btn btn-success">Submit</button>
     </div>
 
@@ -39,6 +49,8 @@ import { defineComponent } from "vue";
 import TutorialDataService from "@/services/TutorialDataService";
 import Tutorial from "@/types/Tutorial";
 import ResponseData from "@/types/ResponseData";
+import User from "@/types/User";
+import UserDataService from "@/services/UserDataService";
 
 export default defineComponent({
   name: "add-tutorial",
@@ -49,18 +61,30 @@ export default defineComponent({
         title: "",
         description: "",
         published: false,
-      } as Tutorial,
+        userId: null, // Add userId field
+      },
       submitted: false,
+      users: [] as User[],
     };
   },
   methods: {
+    getUsers() {
+      UserDataService.getAll()
+        .then((response: ResponseData) => {
+          this.users = response.data;
+        })
+        .catch((e: Error) => {
+          console.log(e);
+        });
+    },
     saveTutorial() {
       let data = {
         title: this.tutorial.title,
         description: this.tutorial.description,
+        userId: this.tutorial.userId, // Include userId
       };
 
-      TutorialDataService.create(data)
+      TutorialDataService.create(data, this.tutorial.userId)
         .then((response: ResponseData) => {
           this.tutorial.id = response.data.id;
           console.log(response.data);
@@ -73,8 +97,11 @@ export default defineComponent({
 
     newTutorial() {
       this.submitted = false;
-      this.tutorial = {} as Tutorial;
+      this.tutorial = { id: null, title: "", description: "", published: false, userId: null };
     },
+  },
+  mounted() {
+    this.getUsers();
   },
 });
 </script>
